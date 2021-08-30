@@ -20,10 +20,9 @@ This tool was verified on following releases:
 
 ## How to Backup
 
-1. Take a copy of this Github repository and switch `apigee-hybrid-cassandra-backup-manager` directory:
+1. Take a copy of this Github repository and switch to the `apigee-hybrid-cassandra-backup-manager` directory:
    ```
    git clone https://github.com/imesh/apigee-hybrid-cassandra-backup-manager
-
    cd apigee-hybrid-cassandra-backup-manager/
    ```
 
@@ -77,7 +76,7 @@ This tool was verified on following releases:
    apigeectl apply -f overrides/overrides.yaml
 
    # wait until all pods get activated
-   apigeectl check-ready -f overrides/overrides.yaml
+   watch apigeectl check-ready -f overrides/overrides.yaml
    ```
 
    Once a new deployment is started in a new namespace the following will happen:
