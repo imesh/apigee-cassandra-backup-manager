@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+SCRIPT_PATH="`dirname \"$0\"`" # relative script path
+SCRIPT_PATH="`( cd \"$MY_PATH\" && pwd )`" # absolute script path
+
 source config.sh
 
 function create_backup() {
@@ -14,7 +17,7 @@ function create_backup() {
     echo "[${CASSANDRA_POD_NAME}] INFO: Exchema cql exported: $(pwd)/${CASSANDRA_POD_NAME}-${SNAPSHOT_NAME}-schema.cql"
 
     echo "[${CASSANDRA_POD_NAME}] INFO: Creating a Cassandra snapshot in the pod..."
-    kubectl -n ${APIGEE_NAMESPACE} cp ./../../pod-create-snapshot.sh ${CASSANDRA_POD_NAME}:/opt/apigee/create-snapshot.sh
+    kubectl -n ${APIGEE_NAMESPACE} cp ${SCRIPT_PATH}/pod-create-snapshot.sh ${CASSANDRA_POD_NAME}:/opt/apigee/create-snapshot.sh
     kubectl -n ${APIGEE_NAMESPACE} exec ${CASSANDRA_POD_NAME} -- bash /opt/apigee/create-snapshot.sh ${SNAPSHOT_NAME} ${CASSANDRA_DB_USER} ${CASSANDRA_DB_PASSWORD}
     echo "[${CASSANDRA_POD_NAME}] INFO: A Cassandra snapshot and snapshot tar file created in the pod"
 
@@ -47,8 +50,8 @@ else
     echo "INFO: The cqlsh pod already exists..."
 fi
 
-mkdir ./snapshots/${SNAPSHOT_NAME}
-pushd ./snapshots/${SNAPSHOT_NAME} > /dev/null
+mkdir -p ./cassandra-backups/snapshots/${SNAPSHOT_NAME}
+pushd ./cassandra-backups/snapshots/${SNAPSHOT_NAME} > /dev/null
 for CASSANDRA_POD_NAME in `kubectl -n ${APIGEE_NAMESPACE} get pods -l app=apigee-cassandra -o json |  jq -r '.items[] | .metadata.name'` ; do
     echo "Apigee Cassandra pod: ${CASSANDRA_POD_NAME}"
     create_backup ${CASSANDRA_POD_NAME}

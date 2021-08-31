@@ -7,6 +7,9 @@ if [ -z "$SNAPSHOT_NAME" ]; then
     exit 1
 fi
 
+SCRIPT_PATH="`dirname \"$0\"`" # relative script path
+SCRIPT_PATH="`( cd \"$MY_PATH\" && pwd )`" # absolute script path
+
 source config.sh
 
 function restore_backup() {
@@ -29,7 +32,7 @@ function restore_backup() {
     kubectl -n ${APIGEE_NAMESPACE} exec ${CASSANDRA_POD_NAME} -- sh -c "rm ${TAR_FILE_PATH}"
 
     echo "[${CASSANDRA_POD_NAME}] INFO: Restoring Cassandra backup..."
-    kubectl -n ${APIGEE_NAMESPACE} cp ./../../pod-restore-snapshot.sh ${CASSANDRA_POD_NAME}:/opt/apigee/restore-snapshot.sh
+    kubectl -n ${APIGEE_NAMESPACE} cp ${SCRIPT_PATH}/pod-restore-snapshot.sh ${CASSANDRA_POD_NAME}:/opt/apigee/restore-snapshot.sh
     kubectl -n ${APIGEE_NAMESPACE} exec ${CASSANDRA_POD_NAME} -- bash /opt/apigee/restore-snapshot.sh ${SNAPSHOT_NAME} ${CASSANDRA_DB_USER} ${CASSANDRA_DB_PASSWORD}
     echo "[${CASSANDRA_POD_NAME}] INFO: DONE!"
 }
@@ -57,7 +60,7 @@ else
     echo "INFO: The cqlsh pod already exists..."
 fi
 
-pushd ./snapshots/${SNAPSHOT_NAME} > /dev/null 
+pushd ./cassandra-backups/snapshots/${SNAPSHOT_NAME} > /dev/null 
 for CASSANDRA_POD_NAME in `kubectl -n ${APIGEE_NAMESPACE} get pods -l app=apigee-cassandra -o json |  jq -r '.items[] | .metadata.name'` ; do
     echo "Apigee Cassandra pod: ${CASSANDRA_POD_NAME}"
     restore_backup ${CASSANDRA_POD_NAME}
