@@ -32,7 +32,7 @@ This tool was verified on following releases:
    ```
    APIGEE_NAMESPACE=apigee
    CASSANDRA_DB_USER=ddl_user
-   CASSANDRA_DB_PASSWORD=#password
+   CASSANDRA_DB_PASSWORD=# set ddl_user password here
    ```
 
 4. Execute `backup.sh` bash script:
@@ -40,7 +40,46 @@ This tool was verified on following releases:
    ./backup.sh
    ```
 
-5. Verify the contents of the cql file and Apigee Cassandra snapshot tar file generated in the `./snapshots/[SNAPSHOT-NAME]/` directory.
+   An example output:
+   ```
+   ./backup.sh
+   Snapshot: snapshot-2021-08-31-15-45-20
+   Apigee Namespace: apigee
+   INFO: Check the availability of the cqlsh pod...
+   INFO: The cqlsh pod already exists...
+   Apigee Cassandra pod: apigee-cassandra-default-0
+   [apigee-cassandra-default-0] INFO: Exporting schema cql...
+   [apigee-cassandra-default-0] INFO: Exchema cql exported: /Users/imesh/apigee/hybrid/cassandra/apigee-hybrid-cassandra-backup-manager/cassandra-backups/snapshots/snapshot-2021-08-31-15-45-20/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql
+   [apigee-cassandra-default-0] INFO: Creating a Cassandra snapshot in the pod...
+   [apigee-cassandra-default-0] INFO: Creating snapshot: snapshot-2021-08-31-15-45-20
+   Requested creating snapshot(s) for [all keyspaces] with snapshot name [snapshot-2021-08-31-15-45-20] and options {skipFlush=false}
+   Snapshot directory: snapshot-2021-08-31-15-45-20
+   [apigee-cassandra-default-0] INFO: Snapshot created: snapshot-2021-08-31-15-45-20
+   [apigee-cassandra-default-0] INFO: Creating snapshot tar file: snapshot-2021-08-31-15-45-20
+   tar: Removing leading `/' from member names
+   [apigee-cassandra-default-0] INFO: Snapshot tar file generated: /opt/apigee/data/apigee-cassandra-default-0-backup-snapshot-2021-08-31-15-45-20.tgz
+   [apigee-cassandra-default-0] INFO: Clearing snapshot: snapshot-2021-08-31-15-45-20
+   Requested clearing snapshot(s) for [all keyspaces] with snapshot name [snapshot-2021-08-31-15-45-20]
+   [apigee-cassandra-default-0] INFO: Snapshot cleared: snapshot-2021-08-31-15-45-20
+   [apigee-cassandra-default-0] INFO: A Cassandra snapshot and snapshot tar file created in the pod
+   [apigee-cassandra-default-0] INFO: Copying Cassandra snapshot file from the pod to the local machine...
+   tar: Removing leading `/' from member names
+   [apigee-cassandra-default-0] INFO: Cassandra snapshot file copied: /Users/imesh/apigee/hybrid/cassandra/apigee-hybrid-cassandra-backup-manager/cassandra-backups/snapshots/snapshot-2021-08-31-15-45-20/apigee-cassandra-default-0-backup-snapshot-2021-08-31-15-45-20.tgz
+   [apigee-cassandra-default-0] INFO: Deleting Cassandra snapshot file created in the pod...
+   [apigee-cassandra-default-0] INFO: Cassandra snapshot file created in the pod was deleted
+   [apigee-cassandra-default-0] INFO: Backup DONE!
+   INFO: Deleting cqlsh pod...
+   INFO: DONE!
+   ```
+
+5. Verify the contents of the cql file and Apigee Cassandra snapshot tar file generated in the `./snapshots/[SNAPSHOT-NAME]/` directory:
+   ```
+   # verify the contents of the cql file
+   cat cassandra-backups/snapshots/${SNAPSHOT_NAME}/${CASSANDRA_POD_NAME}-snapshot-2021-08-31-15-45-20-schema.cql
+
+   # verify the contents of the snapshot tar file
+   tar -tvf cassandra-backups/snapshots/${SNAPSHOT_NAME}/${CASSANDRA_POD_NAME}-backup-${SNAPSHOT_NAME}.tgz
+   ```
 
 ## How to Restore
 
@@ -90,6 +129,101 @@ This tool was verified on following releases:
 7. Execute `restore.sh` bash script by passing the snapshot name:
    ```
    ./restore.sh [SNAPSHOT-NAME]
+   ```
+
+   An example output:
+   ```
+   ./restore.sh snapshot-2021-08-31-15-45-20
+   Snapshot: snapshot-2021-08-31-15-45-20
+   Apigee Namespace: apigee
+   The Apigee Cassandra restoration process should be executed on a blank Cassandra database. Hence, a new Apigee runtime should be created on a new Kubernetes namespace for this task.
+   Does this namespace "apigee" meet above requirement (y/n)? y
+   INFO: Check the availability of the cqlsh pod...
+   INFO: The cqlsh pod already exists...
+   Apigee Cassandra pod: apigee-cassandra-default-0
+   [apigee-cassandra-default-0] INFO: Copying cql script to the pod...
+   [apigee-cassandra-default-0] INFO: Executing cql script...
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:3:AlreadyExists: Keyspace 'kvm_hybrid_project_id_hybrid' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:31:AlreadyExists: Table 'kvm_hybrid_project_id_hybrid.kvm_map_keys_descriptor' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:58:AlreadyExists: Table 'kvm_hybrid_project_id_hybrid.kvm_map_entry' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:85:AlreadyExists: Table 'kvm_hybrid_project_id_hybrid.kvm_map_descriptor' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:87:AlreadyExists: Keyspace 'kms_hybrid_project_id_hybrid' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:109:AlreadyExists: Table 'kms_hybrid_project_id_hybrid.company_developer_sorted_by_email' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:143:AlreadyExists: Table 'kms_hybrid_project_id_hybrid.app' already exists
+   ...
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:1057:AlreadyExists: Table 'perses.marked_entity' already exists
+   /tmp/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql:1081:AlreadyExists: Table 'perses.entity_count' already exists
+   command terminated with exit code 2
+   [apigee-cassandra-default-0] INFO: Copying Cassandra snapshot file to the pod...
+   [apigee-cassandra-default-0] INFO: Extracting Cassandra snapshot tar file in pod...
+   opt/apigee/data/apigee-cassandra/data/perses/marked_entity-85c471f0017811ecb0fa61572cdfaec5/snapshots/
+   opt/apigee/data/apigee-cassandra/data/perses/marked_entity-85c471f0017811ecb0fa61572cdfaec5/snapshots/snapshot-2021-08-31-15-45-20/
+   opt/apigee/data/apigee-cassandra/data/perses/marked_entity-85c471f0017811ecb0fa61572cdfaec5/snapshots/snapshot-2021-08-31-15-45-20/manifest.json
+   opt/apigee/data/apigee-cassandra/data/perses/marked_entity-85c471f0017811ecb0fa61572cdfaec5/snapshots/snapshot-2021-08-31-15-45-20/schema.cql
+   ...
+   opt/apigee/data/apigee-cassandra/data/cache_hybrid_project_id_hybrid/cache_map_descriptor-526f1e41017811ecb0fa61572cdfaec5/snapshots/snapshot-2021-08-31-15-45-20/md-7-big-Summary.db
+   opt/apigee/data/apigee-cassandra/data/cache_hybrid_project_id_hybrid/cache_map_descriptor-526f1e41017811ecb0fa61572cdfaec5/snapshots/snapshot-2021-08-31-15-45-20/schema.cql
+   tmp/tokens.txt
+   [apigee-cassandra-default-0] INFO: Deleting Cassandra snapshot tar file in the pod...
+   [apigee-cassandra-default-0] INFO: Restoring Cassandra backup...
+   [apigee-cassandra-default-0] INFO: Copying snapshot of ./apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_descriptor-70eae1d00a2211ec92d5c55959899199 to its data directory...
+   mv: cannot stat './apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_descriptor-70eae1d00a2211ec92d5c55959899199/snapshots/snapshot-2021-08-31-15-45-20/*': No such file or directory
+   [apigee-cassandra-default-0] INFO: Restoring table ./apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_descriptor-70eae1d00a2211ec92d5c55959899199...
+   WARN  06:15:22,688 Small commitlog volume detected at /opt/apigee/data/apigee-cassandra/commitlog; setting commitlog_total_space_in_mb to 2494.  You can override this in cassandra.yaml
+   WARN  06:15:22,865 Only 9.738GiB free across all data volumes. Consider adding more capacity to your cluster or removing obsolete snapshots
+   Established connection to initial hosts
+   Opening sstables and calculating sections to stream
+
+   Summary statistics:
+      Connections per host    : 3
+      Total files transferred : 0
+      Total bytes transferred : 0.000KiB
+      Total duration          : 3820 ms
+      Average transfer rate   : 0.000KiB/s
+      Peak transfer rate      : 0.000KiB/s
+
+   [apigee-cassandra-default-0] INFO: Table successfully restored: ./apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_descriptor-70eae1d00a2211ec92d5c55959899199
+   [apigee-cassandra-default-0] INFO: Copying snapshot of ./apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_keys_descriptor-463ba4e0017811ecb0fa61572cdfaec5 to its data directory...
+   [apigee-cassandra-default-0] INFO: Restoring table ./apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_keys_descriptor-463ba4e0017811ecb0fa61572cdfaec5...
+   WARN  06:15:29,340 Small commitlog volume detected at /opt/apigee/data/apigee-cassandra/commitlog; setting commitlog_total_space_in_mb to 2494.  You can override this in cassandra.yaml
+   WARN  06:15:29,455 Only 9.738GiB free across all data volumes. Consider adding more capacity to your cluster or removing obsolete snapshots
+   Established connection to initial hosts
+   Opening sstables and calculating sections to stream
+   Streaming relevant part of /opt/apigee/data/apigee-cassandra/data/kvm_hybrid_project_id_hybrid/kvm_map_keys_descriptor-463ba4e0017811ecb0fa61572cdfaec5/md-1-big-Data.db  to [/10.112.3.30]
+   progress: [/10.112.3.30]0:1/1 100% total: 100% 0.103KiB/s (avg: 0.103KiB/s)
+   progress: [/10.112.3.30]0:1/1 100% total: 100% 0.000KiB/s (avg: 0.101KiB/s)
+
+   Summary statistics:
+      Connections per host    : 3
+      Total files transferred : 1
+      Total bytes transferred : 0.403KiB
+      Total duration          : 3981 ms
+      Average transfer rate   : 0.101KiB/s
+      Peak transfer rate      : 0.103KiB/s
+
+   ...
+
+   [apigee-cassandra-default-0] INFO: Table successfully restored: ./apigee-cassandra/data/quota_hybrid_project_id_hybrid/timeseries_entry-5ea04db0017811ecb0fa61572cdfaec5
+   [apigee-cassandra-default-0] INFO: Copying snapshot of ./apigee-cassandra/data/quota_hybrid_project_id_hybrid/expiring_counters-5ea04db1017811ecb0fa61572cdfaec5 to its data directory...
+   [apigee-cassandra-default-0] INFO: Restoring table ./apigee-cassandra/data/quota_hybrid_project_id_hybrid/expiring_counters-5ea04db1017811ecb0fa61572cdfaec5...
+   WARN  06:28:25,962 Small commitlog volume detected at /opt/apigee/data/apigee-cassandra/commitlog; setting commitlog_total_space_in_mb to 2494.  You can override this in cassandra.yaml
+   WARN  06:28:26,124 Only 9.734GiB free across all data volumes. Consider adding more capacity to your cluster or removing obsolete snapshots
+   Established connection to initial hosts
+   Opening sstables and calculating sections to stream
+
+   Summary statistics:
+      Connections per host    : 3
+      Total files transferred : 0
+      Total bytes transferred : 0.000KiB
+      Total duration          : 3821 ms
+      Average transfer rate   : 0.000KiB/s
+      Peak transfer rate      : 0.000KiB/s
+
+   [apigee-cassandra-default-0] INFO: Table successfully restored: ./apigee-cassandra/data/quota_hybrid_project_id_hybrid/expiring_counters-5ea04db1017811ecb0fa61572cdfaec5
+   [apigee-cassandra-default-0] INFO: Restore completed: snapshot-2021-08-31-15-45-20
+   [apigee-cassandra-default-0] INFO: DONE!
+   INFO: Deleting cqlsh pod...
+   INFO: DONE!
    ```
 
 8. Verify the data restored to the Apigee Cassandra database through cqlsh:
