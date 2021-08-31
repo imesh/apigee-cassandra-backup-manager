@@ -57,12 +57,12 @@ else
     echo "INFO: The cqlsh pod already exists..."
 fi
 
-pushd ./snapshots/${SNAPSHOT_NAME}
+pushd ./snapshots/${SNAPSHOT_NAME} > /dev/null 
 for CASSANDRA_POD_NAME in `kubectl -n ${APIGEE_NAMESPACE} get pods -l app=apigee-cassandra -o json |  jq -r '.items[] | .metadata.name'` ; do
     echo "Apigee Cassandra pod: ${CASSANDRA_POD_NAME}"
     restore_backup ${CASSANDRA_POD_NAME}
 done
-popd
+popd > /dev/null
 
 echo "INFO: Deleting cqlsh pod..."
 kubectl delete pod cqlsh &> /dev/null
