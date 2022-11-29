@@ -1,4 +1,4 @@
-# Apigee hybrid Cassandra Backup Manager
+# Apigee hybrid Cassandra Backup Manual Execution
 
 ## Background
 In Apigee hybrid, Cassandra backups should be configured according to the [documentation](https://cloud.google.com/apigee/docs/hybrid/v1.5/backup-recovery) for periodically capturing Cassandra backups either using Google Cloud Storage buckets or using a SSH server (VM). Apigee has automated this operation using apigee-cassandra-backup-utility. If it is required to capture a Cassandra backup while the above configuration is not applied or when the Apigee controller in the runtime plane is in an inconsistent state, this approach can be used. 
