@@ -20,10 +20,10 @@ This tool was verified on following releases:
 
 ## How to Backup
 
-1. Take a copy of this Github repository and switch to the `apigee-hybrid-cassandra-backup-manager` directory:
+1. Take a copy of this Github repository and switch to the `apigee-hybrid-cassandra-backup-manual-execution` directory:
    ```
-   git clone https://github.com/imesh/apigee-hybrid-cassandra-backup-manager
-   cd apigee-hybrid-cassandra-backup-manager/
+   git clone https://github.com/imesh/apigee-hybrid-cassandra-backup-manual-execution
+   cd apigee-hybrid-cassandra-backup-manual-execution/
    ```
 
 2. Configure [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) to point to your Apigee hybrid Kubernetes cluster.
@@ -49,7 +49,7 @@ This tool was verified on following releases:
    INFO: The cqlsh pod already exists...
    Apigee Cassandra pod: apigee-cassandra-default-0
    [apigee-cassandra-default-0] INFO: Exporting schema cql...
-   [apigee-cassandra-default-0] INFO: Exchema cql exported: /Users/imesh/apigee/hybrid/cassandra/apigee-hybrid-cassandra-backup-manager/cassandra-backups/snapshots/snapshot-2021-08-31-15-45-20/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql
+   [apigee-cassandra-default-0] INFO: Exchema cql exported: /Users/imesh/apigee/hybrid/cassandra/apigee-hybrid-cassandra-backup-manual-execution/cassandra-backups/snapshots/snapshot-2021-08-31-15-45-20/apigee-cassandra-default-0-snapshot-2021-08-31-15-45-20-schema.cql
    [apigee-cassandra-default-0] INFO: Creating a Cassandra snapshot in the pod...
    [apigee-cassandra-default-0] INFO: Creating snapshot: snapshot-2021-08-31-15-45-20
    Requested creating snapshot(s) for [all keyspaces] with snapshot name [snapshot-2021-08-31-15-45-20] and options {skipFlush=false}
@@ -64,7 +64,7 @@ This tool was verified on following releases:
    [apigee-cassandra-default-0] INFO: A Cassandra snapshot and snapshot tar file created in the pod
    [apigee-cassandra-default-0] INFO: Copying Cassandra snapshot file from the pod to the local machine...
    tar: Removing leading `/' from member names
-   [apigee-cassandra-default-0] INFO: Cassandra snapshot file copied: /Users/imesh/apigee/hybrid/cassandra/apigee-hybrid-cassandra-backup-manager/cassandra-backups/snapshots/snapshot-2021-08-31-15-45-20/apigee-cassandra-default-0-backup-snapshot-2021-08-31-15-45-20.tgz
+   [apigee-cassandra-default-0] INFO: Cassandra snapshot file copied: /Users/imesh/apigee/hybrid/cassandra/apigee-hybrid-cassandra-backup-manual-execution/cassandra-backups/snapshots/snapshot-2021-08-31-15-45-20/apigee-cassandra-default-0-backup-snapshot-2021-08-31-15-45-20.tgz
    [apigee-cassandra-default-0] INFO: Deleting Cassandra snapshot file created in the pod...
    [apigee-cassandra-default-0] INFO: Cassandra snapshot file created in the pod was deleted
    [apigee-cassandra-default-0] INFO: Backup DONE!
